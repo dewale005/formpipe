@@ -1,6 +1,8 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { HomePage } from './pages/Home.page';
 import { UsersPage } from './pages/Users.page';
+import { ViewPage } from './pages/ViewUser.page';
+import { EditPage } from './pages/Edit.page';
 
 const router = createBrowserRouter([
   {
@@ -13,11 +15,11 @@ const router = createBrowserRouter([
   },
   {
     path: '/users/view/:id',
-    element: <p>Not yet implemented</p>,
+    element: <ViewPage />,
   },
   {
     path: '/users/edit/:id',
-    element: <p>Not yet implemented</p>,
+    element: <EditPage />,
   },
 ]);
 

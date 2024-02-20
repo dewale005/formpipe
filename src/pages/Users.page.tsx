@@ -1,44 +1,75 @@
-import { useEffect, useState } from 'react';
-import {
-  Button,
-  Card,
-  Collapse,
-  Group,
-  Image,
-  Paper,
-  Radio,
-  Select,
-  Stack,
-  TextInput,
-  Title,
-} from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
-
-export type User = {
-  id: string;
-  name: string;
-  avatar: string;
-  gender: 'female' | 'male';
-  hair: 'black' | 'brown' | 'blonde' | 'red' | 'grey';
-  eyes: 'brown' | 'blue' | 'green';
-  glasses: boolean;
-};
+/* eslint-disable import/extensions */
+import { Card, Flex, Grid, Stack, TextInput } from '@mantine/core';
+import { TableBody, TableContainer, TableHead } from '@/components/ui/Table';
+import { useUserFinder } from '@/hooks';
+import { DropDown } from '@/components/ui/dropdown';
+import { eyeColour, gender, glasses, hairColorOptions } from '@/util/constants';
 
 export function UsersPage() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [opened, { toggle }] = useDisclosure(false);
-
-  useEffect(() => {
-    fetch('http://localhost:3000/users')
-      .then((response) => response.json())
-      .then((data) => setUsers(data));
-  }, []);
+  const {
+    users,
+    isLoading,
+    setPage,
+    sortedBy,
+    totalPages,
+    reverseSortDirection,
+    activePage,
+    query,
+    search,
+    sorting,
+    handleFIlter,
+  } = useUserFinder();
 
   return (
     <>
       <h1>Users</h1>
 
-      <Button my={'md'} onClick={toggle}>
+      <Card shadow="sm" padding="lg" radius="md" withBorder>
+        <div>
+          <Grid>
+            <Grid.Col span={4}>
+              <TextInput placeholder="Search by any name" mb="md" value={query} onChange={search} />
+            </Grid.Col>
+            <Grid.Col span={8}>
+              <Stack align="flex-end">
+                <Flex gap="md">
+                  <DropDown
+                    title={'Hair Colour'}
+                    data={hairColorOptions}
+                    onChange={(e) => handleFIlter('hair', e.value as string)}
+                  />
+                  <DropDown
+                    title={'Eye Colour'}
+                    data={eyeColour}
+                    onChange={(e) => handleFIlter('eyes', e.value as string)}
+                  />
+                  <DropDown title={'Gender'} data={gender} onChange={(e) => handleFIlter('gender', e.value as string)} />
+                  <DropDown title={'Face wear'} data={glasses} onChange={(e) => handleFIlter('glasses', e.value as string)} />
+                </Flex>
+              </Stack>
+            </Grid.Col>
+          </Grid>
+        </div>
+        <TableContainer minWidth={800}>
+          <TableHead
+            onSort={sorting}
+            reversed={reverseSortDirection}
+            sortedBy={sortedBy}
+            data={['Name', 'Gender', 'Eyes', 'Hair']}
+          />
+          <TableBody
+            data={users}
+            loading={isLoading}
+            activePage={activePage}
+            totalPage={totalPages}
+            setPage={setPage}
+          />
+        </TableContainer>
+      </Card>
+
+      {/* <TableSort /> */}
+
+      {/* <Button my={'md'} onClick={toggle}>
         {opened ? 'Hide filters' : 'Show Filters'}
       </Button>
 
@@ -54,7 +85,7 @@ export function UsersPage() {
             <Select
               label="Eye Colour"
               placeholder="Pick value"
-              data={['Brown', 'Blue', 'Green', 'Grey']}
+              data={[]}
             />
             <Select label="Gender" placeholder="Pick value" data={['Male', 'Female']} />
             <Radio.Group label="Glasses?" defaultValue="all">
@@ -89,7 +120,7 @@ export function UsersPage() {
             </Button>
           </Card>
         ))}
-      </Group>
+      </Group> */}
     </>
   );
 }
